@@ -271,8 +271,8 @@ function shortPath(x,y,endX,endY){
 		explored = explore(worldDup,hArray,x,y);
 		explored.forEach(e=>{
 			open2.push(e);
-			console.log(open2);
 		});
+		console.log(open2);
 		i = open2.indexOf(tempCell);
 		open2.splice(i,1);
 		if(iter==1)
