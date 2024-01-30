@@ -21,10 +21,12 @@
             <div class="col-12 table-responsive ">
                 <table class="table table-bordered world mx-auto" style="border: 1px solid black;">
                     <?php
-                        for($i = 0; $i < 10; $i++){
+                        $rows = 10;
+                        $cols = 10;
+                        for($i = 0; $i < $rows; $i++){
                             echo '<tr class="tr">';
-                            for($j = 0; $j < 10; $j++){
-                                echo '<td onclick="changeColor(this)" data-x="'.$i.'" data-y="'.$j.'" class="tdClass"></td>';
+                            for($j = 0; $j < $cols; $j++){
+                                echo '<td id="unit'.($j+$i*$rows).'" onclick="changeColor(this)" data-x="'.$i.'" data-y="'.$j.'" class="tdClass"></td>';
                             }
                             echo '</tr>';
                         }
@@ -35,6 +37,10 @@
 	</div>
     <div id="tempStart" class="d-none"></div>
     <div id="tempEnd" class="d-none"></div>
-    <script src="astar.js"></script>
+    <!-- <script src="astar.js"></script> -->
+    <script src="astarStable.js"></script>
+    <script>
+        
+    </script>
 </body>
 </html>
