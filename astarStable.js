@@ -98,19 +98,15 @@ function aStar(world, hArray, start, goal) {
 	const closedSet = [];
 
 	while (openSet.length > 0) {
-		// Find the node with the lowest f value in the open set
+		//node with lowest F and remove from openSet and add to closeSet
 		const currentNode = openSet.reduce(
 			(minNode, node) => (node.f < minNode.f ? node : minNode),
 			openSet[0]
 		);
-
-		// Remove the current node from the open set
 		openSet.splice(openSet.indexOf(currentNode), 1);
-
-		// Add the current node to the closed set
 		closedSet.push(currentNode);
 
-		// Check if the current node is the goal
+		// if goal
 		if (currentNode.row === goal[0] && currentNode.col === goal[1]) {
 			// Reconstruct the path from goal to start
 			const path = [];
@@ -122,7 +118,7 @@ function aStar(world, hArray, start, goal) {
 			return path;
 		}
 
-		// Generate neighbors for the current node
+		// neighbors for the current node
 		const neighbors = [
 			{ row: currentNode.row - 1, col: currentNode.col, g: currentNode.g + 1 },
 			{ row: currentNode.row + 1, col: currentNode.col, g: currentNode.g + 1 },
@@ -130,7 +126,7 @@ function aStar(world, hArray, start, goal) {
 			{ row: currentNode.row, col: currentNode.col + 1, g: currentNode.g + 1 },
 		];
 
-		// Filter out neighbors outside the world or on obstacles
+		// Filter out invalidNeighbors like walls
 		const validNeighbors = neighbors.filter(
 			(neighbor) =>
 				neighbor.row >= 0 &&
@@ -140,7 +136,6 @@ function aStar(world, hArray, start, goal) {
 				world[neighbor.row][neighbor.col] !== 1
 		);
 
-		// Iterate through neighbors
 		for (const neighbor of validNeighbors) {
 			// Skip if the neighbor is in the closed set
 			if (
@@ -151,21 +146,17 @@ function aStar(world, hArray, start, goal) {
 				continue;
 			}
 
-			// Check if the neighbor is in the open set or has a lower g score
+			// Check if the neighbor is in the openSet
 			const existingNode = openSet.find(
 				(node) => node.row === neighbor.row && node.col === neighbor.col
 			);
-			if (!existingNode || neighbor.g < existingNode.g) {
-				// Update or add the neighbor to the open set
+			if (!existingNode) {
+				// Add the neighbor to the openSet
 				if (!existingNode) {
 					neighbor.h = hArray[neighbor.row][neighbor.col];
 					neighbor.f = neighbor.g + neighbor.h;
 					neighbor.parent = currentNode;
 					openSet.push(neighbor);
-				} else {
-					existingNode.g = neighbor.g;
-					existingNode.f = neighbor.g + existingNode.h;
-					existingNode.parent = currentNode;
 				}
 			}
 		}
