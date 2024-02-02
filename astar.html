@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A star</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="astar.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h1 class="display-4 text-center">A* - Path Finding Algorithm</h1>
+            <div class="row g-3 justify-content-center">
+                <div class=" form-group col-md-3 col-6">
+                    <label for="rows" class="form-label">Rows</label>
+                    <input type="number" class="form-control" id="rows">
+                </div>
+                <div class="col-md-3 col-6">
+                    <label for="cols" class="form-label">Columns</label>
+                    <input type="number" class="form-control" id="cols">
+                </div>
+                <div class="col-12 text-center">
+                    <button  class="btn btn-warning" onclick="generateTable();">Generate</button>
+                </div>
+            </div>
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary m15" onclick="startCell();">Start</button>
+                <button type="button" class="btn btn-danger m15" onclick="endCell();">End</button>
+                <button type="button" class="btn btn-dark m15" onclick="wallCell();">Wall</button>
+                <button type="button" class="btn btn-success m15" onclick="findPath();" ;>Find Path</button>
+            </div>
+            <div class="col-12 table-responsive ">
+                <table id="worldTable" class="table table-bordered world mx-auto" style="border: 1px solid black;">
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="tempStart" class="d-none"></div>
+    <div id="tempEnd" class="d-none"></div>
+    <script>
+    </script>
+    <script src="astarStable.js"></script>
+</body>
+
+</html>

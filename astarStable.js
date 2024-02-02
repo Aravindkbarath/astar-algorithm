@@ -9,6 +9,22 @@ var oldEnd = $("#tempEnd");
 var rows = 0;
 var cols = 0;
 
+
+function generateTable() {
+	$('#worldTable').html('');
+	rows = $('#rows').val();
+	cols = $('#cols').val();
+	html = '';
+	for(let i=0;i<rows;i++){
+		html+='<tr class="tr">'
+		for(let j=0;j<cols;j++){
+			html+='<td class="tdClass" onclick="changeColor(this)" id="unit' +  (j+cols*i) + '" data-x="'+ i + 
+				'" data-y="' + j + '" style="border: 1px solid black;"></td>';
+		}	
+		html+='</tr>'
+	}
+	$('#worldTable').append(html);
+}
 function startCell() {
 	tdSts = 1;
 }
@@ -53,12 +69,12 @@ function findPath() {
 	sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
 	console.log(sp);
 	for (let cell in sp){
-		unit = sp[cell][1]+sp[cell][0]*rows;
+		unit = parseInt(sp[cell][1])+parseInt(sp[cell][0]*cols);
 		if(sp[cell][0] == startX && sp[cell][1] == startY){
-			$('#unit' + (unit).toString()).css("background-color", "green").css('border', '5px solid blue');
+			$('#unit' + (unit).toString()).css("background-color", "green");
 		}
 		else if(sp[cell][0] == endX && sp[cell][1] == endY){
-			$('#unit' + (unit).toString()).css("background-color", "green").css('border', '5px solid red');
+			$('#unit' + (unit).toString()).css("background-color", "green");
 		}
 		else{
 			$('#unit' + (unit).toString()).css("background-color", "green");
@@ -67,10 +83,10 @@ function findPath() {
 }
 
 function buildWorldAndHeuristicArray(wallArray, endX, endY) {
-	for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < rows; i++) {
 		temp = [];
 		temp1 = [];
-		for (let j = 0; j < 10; j++) {
+		for (let j = 0; j < cols; j++) {
 			temp.push(0);
 			temp1.push(Math.abs(endX - i + endY - j));
 		}
