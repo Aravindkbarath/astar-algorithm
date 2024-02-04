@@ -21,14 +21,6 @@ function generateTable() {
 	for (let i = 0; i < rows; i++) {
 		rowHtml = $("<tr>", { class: "tr" });
 		for (let j = 0; j < cols; j++) {
-			// html +=
-			// 	'<td class="tdClass" onclick="changeColor(this)" id="unit' +
-			// 	(j + cols * i) +
-			// 	'" data-x="' +
-			// 	i +
-			// 	'" data-y="' +
-			// 	j +
-			// 	'" style="border: 1px solid black;"></td>';
 			colHtml = $("<td>", {
 				class: "square-cell",
 				onclick: "changeColor(this)",
@@ -119,14 +111,14 @@ function buildWorldAndHeuristicArray(wallArray, endX, endY) {
 	return [world, hArray];
 }
 
-function aStar(world, hArray, start, goal) {
+function aStar(worldAr, hArr, start, goal) {
 	const openSet = [
 		{
 			row: start[0],
 			col: start[1],
 			g: 0,
-			h: hArray[start[0]][start[1]],
-			f: hArray[start[0]][start[1]],
+			h: hArr[start[0]][start[1]],
+			f: hArr[start[0]][start[1]],
 		},
 	];
 	const closedSet = [];
@@ -164,10 +156,10 @@ function aStar(world, hArray, start, goal) {
 		const validNeighbors = neighbors.filter(
 			(neighbor) =>
 				neighbor.row >= 0 &&
-				neighbor.row < world.length &&
+				neighbor.row < worldAr.length &&
 				neighbor.col >= 0 &&
-				neighbor.col < world[0].length &&
-				world[neighbor.row][neighbor.col] !== 1
+				neighbor.col < worldAr[0].length &&
+				worldAr[neighbor.row][neighbor.col] !== 1
 		);
 
 		for (const neighbor of validNeighbors) {
@@ -181,13 +173,13 @@ function aStar(world, hArray, start, goal) {
 			}
 
 			// Check if the neighbor is in the openSet
-			const existingNode = openSet.find(
+			const existingNode = openSet.some(
 				(node) => node.row === neighbor.row && node.col === neighbor.col
 			);
 			if (!existingNode) {
 				// Add the neighbor to the openSet
 				if (!existingNode) {
-					neighbor.h = hArray[neighbor.row][neighbor.col];
+					neighbor.h = hArr[neighbor.row][neighbor.col];
 					neighbor.f = neighbor.g + neighbor.h;
 					neighbor.parent = currentNode;
 					openSet.push(neighbor);
