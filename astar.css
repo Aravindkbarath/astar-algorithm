@@ -2,22 +2,37 @@ html,
 body {
 	height: 100%;
 }
-.p15 {
-	padding: 15px;
-}
 .m15 {
 	margin: 15px;
 }
 body {
+    margin: 0;
+      padding: 0;
+	background: url(../astar-algorithm/gggrain.svg) no-repeat center center fixed;
 	height: 100%;
-	background-image: url(../gggrain2.svg);
 	background-size: cover;
+    height: 100vh;
 }
 .container {
 	height: 100%;
 }
 
-.world {
+/* .world {
 	width: 30em;
 	height: 30em !important;
+} */
+table .square-cell {
+	width: 40px !important; 
+	height: 40px  !important;
+	text-align: center;
+	/* vertical-align: middle; */
+	border: 1px solid #0c0909;
+}
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+.table {
+    width: max-content;
 }
