@@ -178,12 +178,10 @@ function aStar(worldAr, hArr, start, goal) {
 			);
 			if (!existingNode) {
 				// Add the neighbor to the openSet
-				if (!existingNode) {
-					neighbor.h = hArr[neighbor.row][neighbor.col];
-					neighbor.f = neighbor.g + neighbor.h;
-					neighbor.parent = currentNode;
-					openSet.push(neighbor);
-				}
+				neighbor.h = hArr[neighbor.row][neighbor.col];
+				neighbor.f = neighbor.g + neighbor.h;
+				neighbor.parent = currentNode;
+				openSet.push(neighbor);
 			}
 		}
 	}
