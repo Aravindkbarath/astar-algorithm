@@ -77,8 +77,11 @@ function findPath() {
 
 	rows = worldArray.length;
 	cols = worldArray[0].length;
-
-	sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
+	lowTurn = $('#lowTurn').prop("checked");
+	if(lowTurn)
+		sp = aStarLowTurn(worldArray, hArray, [startX, startY], [endX, endY]);
+	else
+		sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
 	console.log(sp);
 	for (let cell in sp) {
 		unit = parseInt(sp[cell][1]) + parseInt(sp[cell][0] * cols);
@@ -184,6 +187,96 @@ function aStar(worldAr, hArr, start, goal) {
 				openSet.push(neighbor);
 			}
 		}
+	}
+
+	// No path found
+	return null;
+}
+
+function aStarLowTurn(worldAr, hArr, start, goal) {
+	const openSet = [
+		{
+			row: start[0],
+			col: start[1],
+			g: 0,
+			h: hArr[start[0]][start[1]],
+			f: hArr[start[0]][start[1]],
+			t: 0,
+		},
+	];
+	openSet[0].parent = {
+		row: -1,
+		col: -1,
+	};
+	const closedSet = [];
+
+	while (openSet.length > 0) {
+		//node with lowest F and remove from openSet and add to closeSet
+        // lowest turn too
+		const currentNode = openSet.reduce(
+			(minNode, node) => ( ((node.f <= minNode.f) && (node.t < minNode.t)) ? node : minNode),
+			openSet[0]
+		);
+		openSet.splice(openSet.indexOf(currentNode), 1);
+		closedSet.push(currentNode);
+
+		// if goal
+		if (currentNode.row === goal[0] && currentNode.col === goal[1]) {
+			// Reconstruct the path from goal to start
+			const path = [];
+			let current = currentNode;
+			while ( !((current.row == -1) && (current.col == -1)) ) {   //while reached start point's parent -1,-1
+				path.unshift([current.row, current.col]);
+				current = current.parent;
+			}
+
+			return path;
+		}
+
+		// neighbors for the current node
+		const neighbors = [
+			{ row: currentNode.row - 1, col: currentNode.col, g: currentNode.g + 1 },
+			{ row: currentNode.row + 1, col: currentNode.col, g: currentNode.g + 1 },
+			{ row: currentNode.row, col: currentNode.col - 1, g: currentNode.g + 1 },
+			{ row: currentNode.row, col: currentNode.col + 1, g: currentNode.g + 1 },
+		];
+
+		// Filter out invalidNeighbors like walls
+		const validNeighbors = neighbors.filter(
+			(neighbor) =>
+				neighbor.row >= 0 &&
+				neighbor.row < worldAr.length &&
+				neighbor.col >= 0 &&
+				neighbor.col < worldAr[0].length &&
+				worldAr[neighbor.row][neighbor.col] !== 1
+		);
+
+		for (const neighbor of validNeighbors) {
+			// Skip if the neighbor is in the closed set
+			if (
+				closedSet.some(
+					(node) => node.row === neighbor.row && node.col === neighbor.col
+				)
+			) {
+				continue;
+			}
+
+			// Check if the neighbor is in the openSet
+			const existingNode = openSet.some(
+				(node) => node.row === neighbor.row && node.col === neighbor.col
+			);
+			if (!existingNode) {
+				// Add the neighbor to the openSet
+				neighbor.h = hArr[neighbor.row][neighbor.col];
+				neighbor.f = neighbor.g + neighbor.h;
+				neighbor.t = currentNode.t;
+				if((currentNode.parent).row != neighbor.row && (currentNode.parent).col != neighbor.col)
+					neighbor.t = currentNode.t + 1;
+				neighbor.parent = currentNode;
+				openSet.push(neighbor);
+			}
+		}
+		console.log(JSON.stringify(openSet,null,4))
 	}
 
 	// No path found

@@ -36,3 +36,8 @@ table .square-cell {
 .table {
     width: max-content;
 }
+
+.form-switch .form-check-input:checked {
+	background-position: right center;
+	background-color: rgb(202, 103, 248) !important;
+  }

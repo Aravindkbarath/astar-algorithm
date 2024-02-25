@@ -77,8 +77,11 @@ function findPath() {
 
 	rows = worldArray.length;
 	cols = worldArray[0].length;
-
-	sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
+	lowTurn = $('#lowTurn').prop("checked");
+	if(lowTurn)
+		sp = aStarLowTurn(worldArray, hArray, [startX, startY], [endX, endY]);
+	else
+		sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
 	console.log(sp);
 	for (let cell in sp) {
 		unit = parseInt(sp[cell][1]) + parseInt(sp[cell][0] * cols);

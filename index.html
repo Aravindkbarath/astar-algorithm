@@ -61,12 +61,21 @@
 					>
 						Find Path
 					</button>
+					<div class="form-switch">
+						<input
+							class="form-check-input"
+							type="checkbox"
+							role="switch"
+							id="lowTurn"
+							checked
+						/>
+						<label class="form-check-label" for="lowTurn"
+							>Low Turns</label
+						>
+					</div>
 				</div>
 
-				<div
-					class="table-responsive"
-					id="tableContainer"
-				>
+				<div class="table-responsive" id="tableContainer">
 					<table
 						id="worldTable"
 						class="table table-bordered mx-auto"
@@ -95,6 +104,6 @@
 			crossorigin="anonymous"
 		></script>
 		<!-- <script src="astar.js"></script> -->
-		<script src="astar-lessTurn.js"></script>
+		<script src="astar.js"></script>
 	</body>
 </html>
