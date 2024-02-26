@@ -225,10 +225,12 @@ function aStarLowTurn(worldAr, hArr, start, goal) {
 			// Reconstruct the path from goal to start
 			const path = [];
 			let current = currentNode;
-			while ( !((current.row == -1) && (current.col == -1)) ) {   //while reached start point's parent -1,-1
+			// while ( !((current.row == -1) && (current.col == -1)) ) {   //while reached start point's parent -1,-1
+			while ( !((current.row == start[0]) && (current.col == start[1])) ) {   //while reached start point's parent -1,-1
 				path.unshift([current.row, current.col]);
 				current = current.parent;
 			}
+			path.unshift(start);
 
 			return path;
 		}
