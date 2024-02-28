@@ -80,6 +80,7 @@ function findPath() {
 	lowTurn = $('#lowTurn').prop("checked");
 	if(lowTurn)
 		sp = aStarLowTurn(worldArray, hArray, [startX, startY], [endX, endY]);
+		// sp = aStar2(worldArray, hArray, [startX, startY], [endX, endY]);
 	else
 		sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
 	console.log(sp);
@@ -101,7 +102,14 @@ function buildWorldAndHeuristicArray(wallArray, endX, endY) {
 		temp1 = [];
 		for (let j = 0; j < cols; j++) {
 			temp.push(0);
-			temp1.push(Math.abs(endX - i + endY - j));
+			// temp1.push(1.5*Math.abs(endX - i + endY - j));		//old heuristic
+
+			dx = Math.abs(i - endX);
+			dy = Math.abs(j - endY);
+			turns = dx + dy; 
+			distance = Math.sqrt(dx * dx + dy * dy); // Euclidean distance
+			
+			temp1.push(turns + 1.5*distance);
 		}
 		world.push(temp);
 		hArray.push(temp1);
@@ -276,6 +284,99 @@ function aStarLowTurn(worldAr, hArr, start, goal) {
 					neighbor.t = currentNode.t + 1;
 				neighbor.parent = currentNode;
 				openSet.push(neighbor);
+			}
+		}
+		console.log(JSON.stringify(openSet,null,4))
+	}
+
+	// No path found
+	return null;
+}
+
+function aStar2(worldAr, hArr, start, goal) {
+	const openSet = [
+		{
+			row: start[0],
+			col: start[1],
+			g: 0,
+			h: hArr[start[0]][start[1]],
+			f: hArr[start[0]][start[1]],
+		},
+	];
+	openSet[0].parent = {
+		row: -1,
+		col: -1,
+	};
+	const closedSet = [];
+
+	while (openSet.length > 0) {
+		//node with lowest F and remove from openSet and add to closeSet
+		const currentNode = openSet.reduce(
+			(minNode, node) => ( (node.f < minNode.f) ? node : minNode),
+			openSet[0]
+		);
+		openSet.splice(openSet.indexOf(currentNode), 1);
+		closedSet.push(currentNode);
+
+		// if goal
+		if (currentNode.row === goal[0] && currentNode.col === goal[1]) {
+			// Reconstruct the path from goal to start
+			const path = [];
+			let current = currentNode;
+			// while ( !((current.row == -1) && (current.col == -1)) ) {   //while reached start point's parent -1,-1
+			while ( !((current.row == start[0]) && (current.col == start[1])) ) {   //while reached start point's parent -1,-1
+				path.unshift([current.row, current.col]);
+				current = current.parent;
+			}
+			path.unshift(start);
+
+			return path;
+		}
+
+		// neighbors for the current node
+		const neighbors = [
+			{ row: currentNode.row - 1, col: currentNode.col, g: currentNode.g + 1 },
+			{ row: currentNode.row + 1, col: currentNode.col, g: currentNode.g + 1 },
+			{ row: currentNode.row, col: currentNode.col - 1, g: currentNode.g + 1 },
+			{ row: currentNode.row, col: currentNode.col + 1, g: currentNode.g + 1 },
+		];
+
+		// Filter out invalidNeighbors like walls
+		const validNeighbors = neighbors.filter(
+			(neighbor) =>
+				neighbor.row >= 0 &&
+				neighbor.row < worldAr.length &&
+				neighbor.col >= 0 &&
+				neighbor.col < worldAr[0].length &&
+				worldAr[neighbor.row][neighbor.col] !== 1
+		);
+
+		for (const neighbor of validNeighbors) {
+			// Skip if the neighbor is in the closed set
+			if (
+				closedSet.some(
+					(node) => node.row === neighbor.row && node.col === neighbor.col
+				)
+			) {
+				continue;
+			}
+
+			// Check if the neighbor is in the openSet
+			const existingNode = openSet.some(
+				(node) => node.row === neighbor.row && node.col === neighbor.col
+			);
+			if (!existingNode || neighbor.g < existingNode.g) {
+				if(!existingNode){
+					// Add the neighbor to the openSet
+					neighbor.h = hArr[neighbor.row][neighbor.col];
+					neighbor.f = neighbor.g + neighbor.h;
+					neighbor.parent = currentNode;
+					openSet.push(neighbor);
+				}else{
+					existingNode.g = neighbor.g;
+					existingNode.f = neighbor.g + existingNode.h;
+					existingNode.parent = currentNode;
+				}
 			}
 		}
 		console.log(JSON.stringify(openSet,null,4))
