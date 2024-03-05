@@ -79,8 +79,9 @@ function findPath() {
 	cols = worldArray[0].length;
 	lowTurn = $('#lowTurn').prop("checked");
 	if(lowTurn)
-		sp = aStarLowTurn(worldArray, hArray, [startX, startY], [endX, endY]);
+		// sp = aStarLowTurn(worldArray, hArray, [startX, startY], [endX, endY]);
 		// sp = aStar2(worldArray, hArray, [startX, startY], [endX, endY]);
+		sp = aStar3(worldArray, hArray, [startX, startY], [endX, endY]);
 	else
 		sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
 	console.log(sp);
@@ -102,14 +103,7 @@ function buildWorldAndHeuristicArray(wallArray, endX, endY) {
 		temp1 = [];
 		for (let j = 0; j < cols; j++) {
 			temp.push(0);
-			// temp1.push(1.5*Math.abs(endX - i + endY - j));		//old heuristic
-
-			dx = Math.abs(i - endX);
-			dy = Math.abs(j - endY);
-			turns = dx + dy; 
-			distance = Math.sqrt(dx * dx + dy * dy); // Euclidean distance
-			
-			temp1.push(turns + 1.5*distance);
+			temp1.push(Math.abs(endX - i + endY - j));
 		}
 		world.push(temp);
 		hArray.push(temp1);
@@ -293,7 +287,7 @@ function aStarLowTurn(worldAr, hArr, start, goal) {
 	return null;
 }
 
-function aStar2(worldAr, hArr, start, goal) {
+function aStar3(worldAr, hArr, start, goal) {
 	const openSet = [
 		{
 			row: start[0],
@@ -304,32 +298,32 @@ function aStar2(worldAr, hArr, start, goal) {
 		},
 	];
 	openSet[0].parent = {
-		row: -1,
-		col: -1,
+		row: openSet[0].row-1,
+		col: openSet[0].col,
 	};
 	const closedSet = [];
 
 	while (openSet.length > 0) {
 		//node with lowest F and remove from openSet and add to closeSet
 		const currentNode = openSet.reduce(
-			(minNode, node) => ( (node.f < minNode.f) ? node : minNode),
+			(minNode, node) => (node.f < minNode.f ? node : minNode),
 			openSet[0]
 		);
 		openSet.splice(openSet.indexOf(currentNode), 1);
 		closedSet.push(currentNode);
+		console.log(openSet);
 
 		// if goal
 		if (currentNode.row === goal[0] && currentNode.col === goal[1]) {
 			// Reconstruct the path from goal to start
 			const path = [];
 			let current = currentNode;
-			// while ( !((current.row == -1) && (current.col == -1)) ) {   //while reached start point's parent -1,-1
-			while ( !((current.row == start[0]) && (current.col == start[1])) ) {   //while reached start point's parent -1,-1
+			while ( !((current.row == start[0]) && (current.col == start[1])) ) {
 				path.unshift([current.row, current.col]);
 				current = current.parent;
+				// console.log(path)
 			}
 			path.unshift(start);
-
 			return path;
 		}
 
@@ -365,23 +359,43 @@ function aStar2(worldAr, hArr, start, goal) {
 			const existingNode = openSet.some(
 				(node) => node.row === neighbor.row && node.col === neighbor.col
 			);
-			if (!existingNode || neighbor.g < existingNode.g) {
-				if(!existingNode){
-					// Add the neighbor to the openSet
-					neighbor.h = hArr[neighbor.row][neighbor.col];
-					neighbor.f = neighbor.g + neighbor.h;
-					neighbor.parent = currentNode;
-					openSet.push(neighbor);
-				}else{
-					existingNode.g = neighbor.g;
-					existingNode.f = neighbor.g + existingNode.h;
-					existingNode.parent = currentNode;
-				}
+			if (!existingNode) {
+				// Add the neighbor to the openSet
+				neighbor.h = hArr[neighbor.row][neighbor.col];
+				if((currentNode.parent).row != neighbor.row && (currentNode.parent).col != neighbor.col)
+					neighbor.g = neighbor.g + 0.5;
+				neighbor.f = neighbor.g + neighbor.h;
+				neighbor.parent = currentNode;
+				openSet.push(neighbor);
 			}
 		}
-		console.log(JSON.stringify(openSet,null,4))
 	}
 
 	// No path found
 	return null;
 }
+
+function calculate_turns(current, next_position, goal){
+    // Calculate direction from current to next position
+	current[0] = current[0]==-1 ? 0 : current[0];
+	current[1] = current[1]==-1 ? 0 : current[1];
+    let dx1 = next_position[0] - current[0]
+    let dy1 = next_position[1] - current[1]
+
+    // Calculate direction from next position to the goal
+    let dx2 = goal[0] - next_position[0]
+    let dy2 = goal[1] - next_position[1]
+
+    // Calculate the dot product of the directions
+    let dot_product = dx1 * dx2 + dy1 * dy2
+
+    // If dot product is negative, it means we have to take a turn
+    // Otherwise, we're continuing straight
+    if (dot_product > 0)
+		num_turns = 0 
+	else
+		num_turns = 1
+	
+    return num_turns;
+}
+
