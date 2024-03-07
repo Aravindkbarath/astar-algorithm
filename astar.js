@@ -80,19 +80,19 @@ function findPath() {
 	lowTurn = $('#lowTurn').prop("checked");
 	if(lowTurn)
 		// sp = aStarLowTurn(worldArray, hArray, [startX, startY], [endX, endY]);
-		// sp = aStar2(worldArray, hArray, [startX, startY], [endX, endY]);
-		sp = aStar3(worldArray, hArray, [startX, startY], [endX, endY]);
+		// sp = aStar3(worldArray, hArray, [startX, startY], [endX, endY]);
+		sp = aStar4(worldArray, hArray, [startX, startY], [endX, endY]);
 	else
 		sp = aStar(worldArray, hArray, [startX, startY], [endX, endY]);
 	console.log(sp);
 	for (let cell in sp) {
 		unit = parseInt(sp[cell][1]) + parseInt(sp[cell][0] * cols);
 		if (sp[cell][0] == startX && sp[cell][1] == startY) {
-			$("#unit" + unit.toString()).css("background-color", "green").css('border','3px solid blue');
+			$("#unit" + unit.toString()).css("background-color", "rgb(151 247 65)").css('border','3px solid blue');
 		} else if (sp[cell][0] == endX && sp[cell][1] == endY) {
-			$("#unit" + unit.toString()).css("background-color", "green").css('border','3px solid red');
+			$("#unit" + unit.toString()).css("background-color", "rgb(151 247 65)").css('border','3px solid red');
 		} else {
-			$("#unit" + unit.toString()).css("background-color", "green");
+			$("#unit" + unit.toString()).css("background-color", "rgb(151 247 65)");
 		}
 	}
 }
@@ -375,10 +375,103 @@ function aStar3(worldAr, hArr, start, goal) {
 	return null;
 }
 
+
+function aStar4(worldAr, hArr, start, goal) {
+	const openSet = [
+		{
+			row: start[0],
+			col: start[1],
+			g: 0,
+			h: hArr[start[0]][start[1]],
+			f: hArr[start[0]][start[1]],
+			dir : 2				//up-1, down-2, left-3, right-4
+		},
+	];
+	openSet[0].parent = {
+		row: openSet[0].row-1,
+		col: openSet[0].col,
+	};
+	const closedSet = [];
+
+	while (openSet.length > 0) {
+		//node with lowest F and remove from openSet and add to closeSet
+		const currentNode = openSet.reduce(
+			(minNode, node) => (node.f < minNode.f ? node : minNode),
+			openSet[0]
+		);
+		openSet.splice(openSet.indexOf(currentNode), 1);
+		closedSet.push(currentNode);
+		console.log(openSet);
+
+		// if goal
+		if (currentNode.row === goal[0] && currentNode.col === goal[1]) {
+			// Reconstruct the path from goal to start
+			const path = [];
+			let current = currentNode;
+			while ( !((current.row == start[0]) && (current.col == start[1])) ) {
+				path.unshift([current.row, current.col]);
+				current = current.parent;
+				// console.log(path)
+			}
+			path.unshift(start);
+			return path;
+		}
+
+		// neighbors for the current node
+		const neighbors = [
+			{ row: currentNode.row - 1, col: currentNode.col, g: currentNode.g + 1, dir: 1 },  // up
+			{ row: currentNode.row + 1, col: currentNode.col, g: currentNode.g + 1, dir: 2 },  // down
+			{ row: currentNode.row, col: currentNode.col - 1, g: currentNode.g + 1, dir: 3 },  // left
+			{ row: currentNode.row, col: currentNode.col + 1, g: currentNode.g + 1, dir: 4 },  // right
+		];
+
+		// Filter out invalidNeighbors like walls
+		const validNeighbors = neighbors.filter(
+			(neighbor) =>
+				neighbor.row >= 0 &&
+				neighbor.row < worldAr.length &&
+				neighbor.col >= 0 &&
+				neighbor.col < worldAr[0].length &&
+				worldAr[neighbor.row][neighbor.col] !== 1
+		);
+
+		for (const neighbor of validNeighbors) {
+			// Skip if the neighbor is in the closed set
+			if (
+				closedSet.some(
+					(node) => node.row === neighbor.row && node.col === neighbor.col
+				)
+			) {
+				continue;
+			}
+
+			// Check if the neighbor is in the openSet
+			const existingNode = openSet.some(
+				(node) => node.row === neighbor.row && node.col === neighbor.col
+			);
+			if (!existingNode) {
+				// Add the neighbor to the openSet
+				neighbor.h = hArr[neighbor.row][neighbor.col];
+				// if((currentNode.parent).row != neighbor.row && (currentNode.parent).col != neighbor.col)
+				if(neighbor.dir != currentNode.dir)
+					neighbor.g = neighbor.g + 0.5;
+				neighbor.f = neighbor.g + neighbor.h;
+				neighbor.parent = currentNode;
+				openSet.push(neighbor);
+				unit = parseInt(neighbor.col) + parseInt(neighbor.row * cols);
+				$("#unit" + unit.toString()).text(neighbor.g + ' , ' + neighbor.h)
+			}
+		}
+	}
+
+	// No path found
+	return null;
+}
+
 function calculate_turns(current, next_position, goal){
     // Calculate direction from current to next position
-	current[0] = current[0]==-1 ? 0 : current[0];
-	current[1] = current[1]==-1 ? 0 : current[1];
+	// current[0] = current[0]==-1 ? 0 : current[0];
+	// current[1] = current[1]==-1 ? 0 : current[1];
     let dx1 = next_position[0] - current[0]
     let dy1 = next_position[1] - current[1]
 

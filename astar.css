@@ -22,8 +22,8 @@ body {
 	height: 30em !important;
 } */
 table .square-cell {
-	width: 40px !important; 
-	height: 40px  !important;
+	width: 50px !important; 
+	height: 50px  !important;
 	text-align: center;
 	/* vertical-align: middle; */
 	border: 1px solid #0c0909;
